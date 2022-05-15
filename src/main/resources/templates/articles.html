@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Articles</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<section class="jumbotron text-center">
+    <div class="container">
+        <!--<h1 class="jumbotron-heading">PET SHOP</h1>-->
+        <h3 class="jumbotron-heading">All articles</h3>
+        <br>
+        <div class="input-group input-group-sm" style="justify-content: center">
+            <form th:action="@{'/articles'}" th:method="GET">
+                <input type="text" id="searchText" name="searchText" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"
+                       placeholder="Search...">
+
+            </form>
+        </div>
+        <br>
+        <p style="font-style: italic">If you want to order, you must first log in.</p>
+    </div>
+</section>
+
+<div class="container mb-4">
+    <div class="row">
+        <div class="col-12" th:if="${articles.size() > 0}">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Article name</th>
+                        <th scope="col">Article description</th>
+                        <th scope="col">Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="article : ${articles}">
+                        <td th:text="${article.getName()}"></td>
+                        <td th:text="${article.getDescription()}"></td>
+                        <td th:text="${article.getPrice()}"></td>
+                        <td class="text-right">
+                            <th:block sec:authorize="hasRole('ROLE_ADMIN' )">
+                                <form th:action="@{'/articles/delete/{id}' (id=${article.getIdArticle()})}"
+                                      th:method="DELETE">
+                                    <button type="submit" class="btn btn-sm btn-danger"><i
+                                            class="fa fa-trash">Delete</i></button>
+                                </form>
+                            </th:block>
+                            <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                                <a th:href="@{'/articles/edit-form/{id}' (id=${article.getIdArticle()})}"
+                                   class="btn btn-sm btn-info"><i class="fa fa-trash">Edit</i></a>
+                            </th:block>
+                            <th:block sec:authorize="hasRole('ROLE_USER')">
+                                <form th:action="@{'/order/add-article/{id}' (id=${article.getIdArticle()})}"
+                                      th:method="POST">
+                                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-trash">Add article
+                                        to order</i></button>
+                                </form>
+                            </th:block>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+            <div class="col mb-3">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12">
+                        <a href="/articles/add-form" class="btn btn-block btn-dark">Add new article</a>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+        <th:block sec:authorize="hasRole('ROLE_USER')">
+            <div class="col mb-3">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12">
+                       <a th:href="@{'/articles/export/pdf'}" class="btn btn-block btn-dark">Export all articles to PDF</a>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+    </div>
+</div>
+</body>
+</html>
+

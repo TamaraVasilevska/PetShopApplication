@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Articles</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<script>
+    var baseurl = "http://localhost:7586/order/total";
+    var total;
+    function loadTotal()
+    {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET",baseurl,true);
+
+        xmlhttp.onreadystatechange = function()
+        {
+            total = xmlhttp.responseText;
+            if (total!== null)
+                document.getElementById('total').innerText = total;
+
+        }
+        xmlhttp.send();
+
+
+    }
+    window.onload=function (){
+        loadTotal()
+    }
+</script>
+
+<section class="jumbotron text-center">
+    <div class="container">
+        <!--<h1 class="jumbotron-heading">PET SHOP</h1>-->
+        <h3 class="jumbotron-heading">Articles in order</h3>
+    </div>
+</section>
+
+<div th:if="${hasError}">
+    <h5 class="text-center text-danger" th:text="${error}"></h5>
+</div>
+
+<div class="container mb-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Article</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Supplier</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="article : ${articles}">
+                        <td th:text="${article.getName()}"></td>
+                        <td th:text="${article.getPrice()}"></td>
+                        <td th:text="${article.getSupplier() != null} ? ${article.getSupplier().getName()} : 'No Supplier'"></td>
+                        <td th:text="${article.getDescription()}"></td>
+                        <td>
+                            <form th:action="@{'/order/remove/{productId}' (productId=${article.getIdArticle()})}"
+                                  th:method="POST">
+                                <button type="submit"
+                                        class="btn btn-sm btn-danger">
+                                    <i class="fa fa-trash"><svg style="margin-bottom:3px" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square" viewBox="0 0 16 16">
+                                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                    </svg></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+
+    <div class="text-right">
+        <form th:action="@{'/order/buy'}">
+           <!-- <label for="email">Enter your email:</label>
+            <input type="email" id="email" name="email" th:required="required">-->
+            <button
+                    class="btn btn-sm btn-success">
+                <i class="fa fa-trash">Confirm order</i>
+            </button>
+        </form>
+    </div>
+
+</body>
+</html>
+
